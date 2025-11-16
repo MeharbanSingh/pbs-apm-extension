@@ -1,0 +1,7 @@
+html body{
+  margin:10px;
+  padding:50px;
+  width: max-content;
+  height: max-content;
+  box-sizing: border-box;
+}

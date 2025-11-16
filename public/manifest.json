@@ -1,0 +1,26 @@
+{
+  "name":"pbs-apm-extension",
+  "version":"2025.2.0",
+  "manifest_version":3,
+  "description":"PBS APM Extension",
+  "permissions":[
+    "storage",
+    "activeTab",
+    "scripting",
+    "tabs"
+  ],
+  "action":{
+    "default_popup":"index.html",
+    "default_title":"PBS APM Extension"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
