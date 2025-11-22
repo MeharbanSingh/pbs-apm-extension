@@ -1,10 +1,87 @@
 <main>
-<p>This is APM Extension</p>
+<p>This is an Epicor extension</p>
 <div class="appInfo">
-  <p>ServerName:{{serverName()}}</p>
-  <p>ApplicationName:{{applicationName()}}</p>
-  <p>FormName:{{formName()}}</p>
+  <p>ServerName: {{serverName()}}</p>
+  <p>ApplicationName: {{applicationName()}}</p>
+  <p>FormName: {{formName()}}</p>
+  <p>UserID: {{userID()}}</p>
+  <p>Company: {{company()}}</p>
+  <p>EpicorVersion: {{EpicorVersion()}}</p>
+  <p>EpicorPatchLevel: {{EpicorPatchLevel()}}</p>
+  <p>UXPVersion: {{UXPVersion()}}</p>
+  <p>HostingType: {{hostingType()}}</p>
   <button (click)="loadAppInfo()">load app Info</button>
   <button (click)="ClearInfo()">Clear info</button>
+  <button (click)="DownloadLocalStorageData()">Download localStorage Data</button>
+  <button (click)="ToggleDeveloperMode()">DeveloperMode</button>
+</div>
+<div>
+  <!-- Column visibility controls -->
+  <div class="column-controls">
+    <ng-container *ngFor="let col of allColumns">
+      <mat-checkbox
+        [checked]="visibleColumns().includes(col.key)"
+        (change)="toggleColumn(col.key)">
+        {{col.label}}
+      </mat-checkbox>
+    </ng-container>
+    <button mat-button color="primary" (click)="resetColumns()">Reset</button>
+    <button mat-button (click)="showOnly(['shortCut','title','defaultShortcut'])">Show Minimal</button>
+  </div>
+  <table mat-table [dataSource]="dataSource()" class="mat-elevation-z8">
+    <!-- Shortcut Column -->
+    <ng-container matColumnDef="shortCut">
+      <th mat-header-cell *matHeaderCellDef>Shortcut</th>
+      <td mat-cell *matCellDef="let element">{{element.shortCut}}</td>
+    </ng-container>
+
+    <!-- Title Column -->
+    <ng-container matColumnDef="title">
+      <th mat-header-cell *matHeaderCellDef>Title</th>
+      <td mat-cell *matCellDef="let element">{{element.title}}</td>
+    </ng-container>
+
+    <!-- Callback Column -->
+    <ng-container matColumnDef="callback">
+      <th mat-header-cell *matHeaderCellDef>Callback</th>
+      <td mat-cell *matCellDef="let element">{{element.callback}}</td>
+    </ng-container>
+
+    <!-- Internal Column -->
+    <ng-container matColumnDef="internal">
+      <th mat-header-cell *matHeaderCellDef>Internal</th>
+      <td mat-cell *matCellDef="let element">{{element.internal}}</td>
+    </ng-container>
+
+    <!-- Category Column -->
+    <ng-container matColumnDef="category">
+      <th mat-header-cell *matHeaderCellDef>Category</th>
+      <td mat-cell *matCellDef="let element">{{element.category}}</td>
+    </ng-container>
+
+    <!-- Element Column -->
+    <ng-container matColumnDef="element">
+      <th mat-header-cell *matHeaderCellDef>Element</th>
+      <td mat-cell *matCellDef="let element">{{element.element}}</td>
+    </ng-container>
+
+    <!-- ID Column -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef>ID</th>
+      <td mat-cell *matCellDef="let element">{{element.id}}</td>
+    </ng-container>
+
+    <!-- Default Shortcut Column -->
+    <ng-container matColumnDef="defaultShortcut">
+      <th mat-header-cell *matHeaderCellDef>Default Shortcut</th>
+      <td mat-cell *matCellDef="let element">{{element.defaultShortcut}}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns();"></tr>
+  </table>
 </div>
 </main>
+
+
+

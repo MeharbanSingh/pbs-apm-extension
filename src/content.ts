@@ -34,6 +34,14 @@ chrome.runtime.onMessage.addListener((message: any, sender: chrome.runtime.Messa
     });
   }
 
+  if (message.type === 'DeveloperMode') {
+    // Handle DeveloperMode message
+    //Run javascript to enable developer mode in the application
+    console.log('Enabling Developer Mode in the application');
+    
+    sendResponse({ success: true });
+  }
+
   return true;
 });
 
