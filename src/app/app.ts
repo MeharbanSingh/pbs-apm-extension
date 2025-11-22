@@ -26,6 +26,9 @@ export class App  {
   company = signal<string>('');
   hotKeyData = signal<any>(null);
   dataViewData = signal<any>(null);
+  // Visibility signals for tables (replaces direct DOM manipulation)
+  showShortcuts = signal(false);
+  showDataViews = signal(false);
 
   // All possible columns with labels for UI controls
   readonly shortCutKeyAllColumns: { key: string; label: string }[] = [
@@ -49,15 +52,9 @@ export class App  {
     { key: 'serverTable', label: 'ServerTable' }
   ];
 
-  showHideTable(className: string) {
-      //toggle visibility of shortCutKeysTable div
-    const tableDiv = document.getElementsByClassName(className)[0] as HTMLElement;
-    if (tableDiv.style.display === 'none') {
-      tableDiv.style.display = 'block';
-    } else {
-      tableDiv.style.display = 'none';
-    }
-  }
+  // Toggle helpers using signals
+  toggleShortcuts() { this.showShortcuts.set(!this.showShortcuts()); }
+  toggleDataViews() { this.showDataViews.set(!this.showDataViews()); }
   // Visible columns (user can hide/show)
   visibleShortCutColumns = signal<string[]>(this.shortCutKeyAllColumns.map(c => c.key));
   displayedShortCutColumns = computed(() => this.visibleShortCutColumns());
@@ -164,6 +161,7 @@ export class App  {
     this.hostingType.set('');
     this.company.set('');
     this.hotKeyData.set(null);
+    this.dataViewData.set(null);
   }
 
   DownloadLocalStorageData() {
