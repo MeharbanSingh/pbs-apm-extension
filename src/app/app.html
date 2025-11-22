@@ -13,22 +13,23 @@
   <button (click)="loadAppInfo()">load app Info</button>
   <button (click)="ClearInfo()">Clear info</button>
   <button (click)="DownloadLocalStorageData()">Download localStorage Data</button>
-  <button (click)="ToggleDeveloperMode()">DeveloperMode</button>
+  <button (click)="showHideTable('shortCutKeysTable')">Load/Unload Shortcuts List</button>
+  <button (click)="showHideTable('dataViews')">Load/Unload dataView List</button>
 </div>
-<div>
+<div class="shortCutKeysTable">
   <!-- Column visibility controls -->
   <div class="column-controls">
-    <ng-container *ngFor="let col of allColumns">
+      @for (col of shortCutKeyAllColumns; track col.key) {
       <mat-checkbox
-        [checked]="visibleColumns().includes(col.key)"
-        (change)="toggleColumn(col.key)">
+        [checked]="visibleShortCutColumns().includes(col.key)"
+        (change)="toggleColumn(visibleShortCutColumns,col.key)">
         {{col.label}}
       </mat-checkbox>
-    </ng-container>
-    <button mat-button color="primary" (click)="resetColumns()">Reset</button>
-    <button mat-button (click)="showOnly(['shortCut','title','defaultShortcut'])">Show Minimal</button>
+    }
+    <button mat-button color="primary" (click)="resetColumns(visibleShortCutColumns, shortCutKeyAllColumns)">Reset</button>
+    <button mat-button (click)="showOnly(visibleShortCutColumns, shortCutKeyAllColumns,['shortCut','title','defaultShortcut'])">Show Minimal</button>
   </div>
-  <table mat-table [dataSource]="dataSource()" class="mat-elevation-z8">
+  <table mat-table [dataSource]="shortCutKeyDataSource()" class="mat-elevation-z8">
     <!-- Shortcut Column -->
     <ng-container matColumnDef="shortCut">
       <th mat-header-cell *matHeaderCellDef>Shortcut</th>
@@ -77,8 +78,61 @@
       <td mat-cell *matCellDef="let element">{{element.defaultShortcut}}</td>
     </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns();"></tr>
+    <tr mat-header-row *matHeaderRowDef="displayedShortCutColumns()"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedShortCutColumns();"></tr>
+  </table>
+</div>
+<div class="dataViews">
+   <div class="column-controls">
+      @for (col of dataViewAllColumns; track col.key) {
+      <mat-checkbox
+        [checked]="visibledataViewColumns().includes(col.key)"
+        (change)="toggleColumn(visibledataViewColumns,col.key)">
+        {{col.label}}
+      </mat-checkbox>
+    }
+    <button mat-button color="primary" (click)="resetColumns(visibledataViewColumns, dataViewAllColumns)">Reset</button>
+    <button mat-button (click)="showOnly(visibledataViewColumns, dataViewAllColumns,['viewId','tableId'])">Show Minimal</button>
+  </div>
+   <table mat-table [dataSource]="dataViewDataSource()" class="mat-elevation-z8">
+    <!-- Shortcut Column -->
+    <ng-container matColumnDef="viewId">
+      <th mat-header-cell *matHeaderCellDef>ViewId</th>
+      <td mat-cell *matCellDef="let element">{{element.viewId}}</td>
+    </ng-container>
+
+    <!-- Title Column -->
+    <ng-container matColumnDef="tableId">
+      <th mat-header-cell *matHeaderCellDef>TableId</th>
+      <td mat-cell *matCellDef="let element">{{element.tableId}}</td>
+    </ng-container>
+
+    <!-- Callback Column -->
+    <ng-container matColumnDef="schema">
+      <th mat-header-cell *matHeaderCellDef>schema</th>
+      <td mat-cell *matCellDef="let element">{{element.schema}}</td>
+    </ng-container>
+
+    <!-- Internal Column -->
+    <ng-container matColumnDef="datasetId">
+      <th mat-header-cell *matHeaderCellDef>DatasetId</th>
+      <td mat-cell *matCellDef="let element">{{element.datasetId}}</td>
+    </ng-container>
+
+    <!-- Category Column -->
+    <ng-container matColumnDef="serverDataset">
+      <th mat-header-cell *matHeaderCellDef>ServerDataset</th>
+      <td mat-cell *matCellDef="let element">{{element.serverDataset}}</td>
+    </ng-container>
+
+    <!-- Element Column -->
+    <ng-container matColumnDef="serverTable">
+      <th mat-header-cell *matHeaderCellDef>ServerTable</th>
+      <td mat-cell *matCellDef="let element">{{element.serverTable}}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayeddataViewColumns()"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayeddataViewColumns();"></tr>
   </table>
 </div>
 </main>

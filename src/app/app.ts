@@ -1,5 +1,5 @@
 /// <reference types="chrome" />
-import { Component, signal, computed, Signal } from '@angular/core';
+import { Component, signal, computed, WritableSignal} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -25,9 +25,10 @@ export class App  {
   hostingType = signal<string>('');
   company = signal<string>('');
   hotKeyData = signal<any>(null);
+  dataViewData = signal<any>(null);
 
   // All possible columns with labels for UI controls
-  readonly allColumns: { key: string; label: string }[] = [
+  readonly shortCutKeyAllColumns: { key: string; label: string }[] = [
     { key: 'shortCut', label: 'Shortcut' },
     { key: 'title', label: 'Title' },
     { key: 'callback', label: 'Callback' },
@@ -38,28 +39,54 @@ export class App  {
     { key: 'defaultShortcut', label: 'Default Shortcut' }
   ];
 
+    // All possible columns with labels for UI controls
+  readonly dataViewAllColumns: { key: string; label: string }[] = [
+    { key: 'viewId', label: 'ViewId' },
+    { key: 'tableId', label: 'TableId' },
+    { key: 'schema', label: 'Schema' },
+    { key: 'datasetId', label: 'DatasetId' },
+    { key: 'serverDataset', label: 'ServerDataset' },
+    { key: 'serverTable', label: 'ServerTable' }
+  ];
+
+  showHideTable(className: string) {
+      //toggle visibility of shortCutKeysTable div
+    const tableDiv = document.getElementsByClassName(className)[0] as HTMLElement;
+    if (tableDiv.style.display === 'none') {
+      tableDiv.style.display = 'block';
+    } else {
+      tableDiv.style.display = 'none';
+    }
+  }
   // Visible columns (user can hide/show)
-  visibleColumns = signal<string[]>(this.allColumns.map(c => c.key));
-  displayedColumns = computed(() => this.visibleColumns());
+  visibleShortCutColumns = signal<string[]>(this.shortCutKeyAllColumns.map(c => c.key));
+  displayedShortCutColumns = computed(() => this.visibleShortCutColumns());
+
+  visibledataViewColumns = signal<string[]>(this.dataViewAllColumns.map(c => c.key));
+  displayeddataViewColumns = computed(() => this.visibledataViewColumns());
 
   // Table data source derived from hotKeyData
-  dataSource = computed<any[]>(() => (this.hotKeyData() ? this.hotKeyData() : []));
+  shortCutKeyDataSource = computed<any[]>(() => (this.hotKeyData() ? this.hotKeyData() : []));
+  dataViewDataSource = computed<any[]>(() => (this.dataViewData() ? this.dataViewData() : []));
 
-  toggleColumn(key: string) {
-    const current = this.visibleColumns();
+  toggleColumn(visibleColumns:WritableSignal<string[]>,key: string) {
+
+    const current = visibleColumns();
     if (current.includes(key)) {
-      this.visibleColumns.set(current.filter(c => c !== key));
+      visibleColumns.set(current.filter(c => c !== key));
     } else {
-      this.visibleColumns.set([...current, key]);
+      visibleColumns.set([...current, key]);
     }
   }
 
-  resetColumns() {
-    this.visibleColumns.set(this.allColumns.map(c => c.key));
+  resetColumns(visibleColumns:WritableSignal<string[]>,allColumns: { key: string; label: string }[]) {
+    //this.visibleShortCutColumns.set(this.shortCutKeyAllColumns.map(c => c.key));
+    visibleColumns.set(allColumns.map(c => c.key));
   }
 
-  showOnly(keys: string[]) {
-    this.visibleColumns.set(this.allColumns.map(c => c.key).filter(k => keys.includes(k)));
+  showOnly(visibleColumns:WritableSignal<string[]>,allColumns: { key: string; label: string }[],keys: string[]) {
+    //this.visibleShortCutColumns.set(this.shortCutKeyAllColumns.map(c => c.key).filter(k => keys.includes(k)));
+    visibleColumns.set(allColumns.map(c => c.key).filter(k => keys.includes(k)));
   }
 
   // private onMessage = (message: any, sender: chrome.runtime.MessageSender) => {
@@ -110,6 +137,7 @@ export class App  {
         this.data.set(JSON.stringify(response.data.localStorageData) || null);
         const obj = JSON.parse(this.data() || '{}');
         this.hotKeyData.set(obj['ep-hot-key'].hotKeyList || null);
+        this.dataViewData.set(obj.kerp.settings.routeState.erpDataViews || null);
         this.serverName.set(obj.ep.session.server.serverUrl.toString().split('/')[2] || 'failed to get');
         this.applicationName.set(obj.ep.session.server.serverUrl.toString().split('/')[3] || 'failed to get');
         this.formName.set(obj.kerp.settings.routeState.appViewId || 'failed to get');
@@ -147,13 +175,6 @@ export class App  {
     }
   }
 
-  ToggleDeveloperMode()
-  {
-    chrome.runtime.sendMessage({ type: 'DeveloperMode' }, (response: any) =>
-    {
-
-    });
-  }
 
   // ngOnDestroy(): void {
   //   chrome.runtime?.onMessage.removeListener(this.onMessage);
